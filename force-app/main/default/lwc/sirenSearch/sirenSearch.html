@@ -1,0 +1,62 @@
+<template>
+    <lightning-input label="SIRET" value={siret} onchange={handleSiretChange}></lightning-input>
+    <lightning-button label="Rechercher" onclick={handleSearch}></lightning-button> 
+    <template if:true={result}>
+        <lightning-datatable 
+            data={result} 
+            columns={columns} 
+            key-field="siret"
+            onrowaction={handleRowAction}>
+        </lightning-datatable>
+    </template>
+    
+    
+    <template if:true={error}>
+        <div>{error}</div>
+    </template>
+   
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={closeModal} title="Fermer">
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Fermer</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Détails de l'Établissement</h2>
+                </header>
+ 
+                <div class="slds-modal__content slds-p-around_medium">
+                     
+                    <lightning-input label="Nom" value={modalData.nom} onchange={handleInputChange} data-id="nom"></lightning-input>
+
+                    
+                    <lightning-input label="SIREN" value={modalData.siren} onchange={handleInputChange} data-id="siren" disabled></lightning-input>
+ 
+                    <lightning-input label="SIRET" value={modalData.siret} onchange={handleInputChange} data-id="siret" disabled></lightning-input>
+
+                    
+                    <lightning-input label="nombre employes" value={modalData.nombreemployes} onchange={handleInputChange} data-id="nombreemployes"></lightning-input>
+ 
+                    <lightning-input label="Code NIC" value={modalData.codeNic} onchange={handleInputChange} data-id="codeNic" disabled></lightning-input>
+ 
+                    <lightning-input label="Categorie Entreprise" value={modalData.categorie} onchange={handleInputChange} data-id="categorie"></lightning-input>
+                </div>
+ 
+                <footer class="slds-modal__footer">
+                    <lightning-button variant="neutral" label="Fermer" onclick={closeModal}></lightning-button>
+
+                     
+                    <template if:true={isSiretValid}>
+                        <lightning-button variant="brand" label="Créer l'Établissement" onclick={handleCreate}></lightning-button>
+                    </template>
+                    <template if:false={isSiretValid}>
+                        <lightning-button variant="brand" label="Modifier l'Établissement" onclick={handleUpdate}></lightning-button>
+                    </template>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

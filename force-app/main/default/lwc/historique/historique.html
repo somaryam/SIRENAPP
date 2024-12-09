@@ -1,0 +1,41 @@
+<template>
+    <div class="slds-card__body slds-card__body_inner">
+        <template if:true={details}>
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Date de Début">Date de Début</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Nom Etablissement">Nom Etablissement</div>
+                        </th>
+                      
+                        <th scope="col">
+                            <div class="slds-truncate" title="Date de Fin">Date de Fin</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={details} for:item="item">
+                        <tr key={item.id}>
+                            <td>
+                                <div class="slds-truncate" title={item.dateDebut}>{item.dateDebut}</div>
+                            </td>
+                            <td>
+                                <div class="slds-truncate" title={item.nomEtablissement}>{item.nomEtablissement}</div>
+                            </td>
+                           
+                            <td>
+                                <div class="slds-truncate" title={item.dateFin}>{item.dateFin}</div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+        <template if:false={details}>
+            <p>Aucune donnée à afficher.</p>
+        </template>
+    </div>
+</template>
