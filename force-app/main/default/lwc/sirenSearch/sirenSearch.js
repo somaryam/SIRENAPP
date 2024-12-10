@@ -12,7 +12,10 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
     @track isModalOpen = false;   
     @track modalData = {};     
     @track isSiretValid = false;   
-
+//staticite modifiables valeurs champs popup like nom et affichage de tous 
+//historique affichage 
+// si j ai le temps afficher depuis le bouton 
+//terminer le plus tot possible 
     columns = [
        { 
         label: 'Nom', 

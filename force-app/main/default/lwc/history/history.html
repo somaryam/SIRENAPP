@@ -1,0 +1,45 @@
+<template>
+    <lightning-card title="Informations SIRET">
+        <div class="slds-p-around_medium">
+            <!-- Sélectionner un Account -->
+            <lightning-combobox
+                label="Sélectionner un Account"
+                value={selectedAccountId}
+                options={accounts}
+                onchange={handleAccountChange}
+            ></lightning-combobox>
+
+            <!-- Affichage du SIRET -->
+            <template if:true={siret}>
+                <p>SIRET sélectionné : {siret}</p>
+            </template>
+
+            <!-- Tableau des données -->
+            <template if:true={data}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr>
+                            <th>Enseigne</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={data} for:item="row">
+                            <tr key={row.enseigne}>
+                                <td>{row.enseigne}</td>
+                                <td>{row.dateDebut}</td>
+                                <td>{row.dateFin}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+
+            <!-- Message si pas de données -->
+            <template if:true={noData}>
+                <p>Aucune donnée trouvée pour ce SIRET.</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>
