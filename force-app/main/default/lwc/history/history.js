@@ -1,56 +1,24 @@
-import { LightningElement, api, track } from 'lwc';
-import getSiretData from '@salesforce/apex/SiretDataController.getSiretData'; // Remplacer par un appel Apex si nécessaire
+import { LightningElement, api, wire, track } from 'lwc';
+import { getRecord } from 'lightning/uiRecordApi';
 
-export default class SiretDataDisplay extends LightningElement {
-    @track siret = '';  // SIRET de l'account sélectionné
-    @track data = [];  // Données associées au SIRET
-    @track noData = false;  // Indicateur pour afficher un message si pas de données
+const FIELDS = ['Account.SIRET__c'];
 
-    // Cette propriété sera définie via l'ID de l'Account sélectionné
-    @api recordId; 
+export default class DisplaySiret extends LightningElement {
+    @api recordId; // ID de l'account sélectionné
+    @track siret; // Variable pour stocker le SIRET
+    @track error; // Message d'erreur
 
-    connectedCallback() {
-        // Lors de la connexion du composant, récupérer le SIRET de l'account
-        if (this.recordId) {
-            this.getAccountSiretData(this.recordId);
-        }
-    }
-
-    // Récupérer les données du SIRET de l'account sélectionné
-    getAccountSiretData(accountId) {
-        // Simuler l'appel API ou Apex pour récupérer le SIRET de l'account
-        getSiretData({ accountId })
-            .then((result) => {
-                if (result && result.siret) {
-                    this.siret = result.siret;
-                    this.getDataForSiret(result.siret); // Appeler la méthode pour récupérer les données associées
-                } else {
-                    this.noData = true;
-                }
-            })
-            .catch((error) => {
-                console.error('Erreur récupération SIRET:', error);
-                this.noData = true;
-            });
-    }
-
-    // Récupérer les données associées au SIRET (ex: Enseigne, dates)
-    getDataForSiret(siret) {
-        // Simuler une récupération de données en fonction du SIRET
-        if (siret === 'SIRET123') {
-            this.data = [
-                { enseigne: 'Enseigne A', dateDebut: '2009-12-25', dateFin: 'En cours' },
-                { enseigne: 'Enseigne B', dateDebut: '2008-01-01', dateFin: '2009-12-24' }
-            ];
-            this.noData = false;
-        } else if (siret === 'SIRET456') {
-            this.data = [
-                { enseigne: 'Enseigne C', dateDebut: '1996-12-25', dateFin: '2007-12-31' }
-            ];
-            this.noData = false;
-        } else {
-            this.data = [];
-            this.noData = true;
+    // Récupérer les données du compte, y compris le SIRET
+    @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+    wiredRecord({ error, data }) {
+        if (data) {
+            // Récupérer le SIRET et le stocker dans la variable 'siret'
+            this.siret = data.fields.SIRET__c.value;
+            this.error = null; // Effacer l'erreur si les données sont récupérées avec succès
+            console.log('SIRET récupéré:', this.siret); // Affiche le SIRET dans la console pour vérification
+        } else if (error) {
+            this.error = 'Erreur lors de la récupération du SIRET';
+            console.error(error); // Affiche l'erreur dans la console
         }
     }
 }
