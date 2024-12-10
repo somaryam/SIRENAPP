@@ -1,20 +1,24 @@
 <template>
-    <!-- Affichage du SIRET récupéré -->
-    <lightning-input label="SIRET" value={siret} readonly></lightning-input>
+    <lightning-card title="Détails SIRET" icon-name="standard:account">
+        <template if:true={error}>
+            <div class="slds-text-color_error">
+                {error}
+            </div>
+        </template>
 
-    <!-- Affichage des résultats de recherche -->
-    <template if:true={result}>
-        <lightning-datatable
-            data={result}
-            columns={columns}
-            key-field="enseigne">
-        </lightning-datatable>
-    </template>
+        <template if:true={result}>
+            <lightning-datatable
+                data={result}
+                columns={columns}
+                key-field="id"
+                hide-checkbox-column="true">
+            </lightning-datatable>
+        </template>
 
-    <!-- Affichage des erreurs -->
-    <template if:true={error}>
-        <lightning-card>
-            <p>{error}</p>
-        </lightning-card>
-    </template>
+        <template if:true={siret}>
+            <div class="slds-m-top_medium">
+                <p><strong>SIRET:</strong> {siret}</p>
+            </div>
+        </template>
+    </lightning-card>
 </template>
