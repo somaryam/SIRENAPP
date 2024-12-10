@@ -4,7 +4,8 @@ public class AccManager {
     public static Map<String, Object> checkIfRecordExists(String siret) {
         Map<String, Object> response = new Map<String, Object>();
 
-        List<Account> existingRecords = [SELECT Id, Name, SIREN__c, NumberOfEmployees, SIRET__c, Categorie_Entreprise__c FROM Account  WHERE SIRET__c = :siret  LIMIT 1];
+        List<Account> existingRecords = [SELECT Id, Name, SIREN__c, NumberOfEmployees, SIRET__c, Categorie_Entreprise__c 
+                                         FROM Account WHERE SIRET__c = :siret LIMIT 1];
 
         if (!existingRecords.isEmpty()) {
             response.put('exists', true);
@@ -17,14 +18,17 @@ public class AccManager {
     }
 
     @AuraEnabled
-    public static Account createAccount(String siret, String nom, String adresse, String codeNic, String dateCreation) {
+    public static Account createAccount(String siret, String nom, String categorieEntreprise, String codeNic, String nombreEmployes) {
         try {
             Account newAccount = new Account();
             newAccount.Name = nom;
-            newAccount.SIRET__c = siret;  
-            newAccount.Adresse__c = adresse;  
-            newAccount.Code_NIC__c = codeNic;  
-            newAccount.Date_Creation__c = Date.valueOf(dateCreation);  
+            newAccount.SIRET__c = siret;
+            
+            // Conversion correcte de nombreEmployes en Integer
+            newAccount.NumberOfEmployees = Integer.valueOf(nombreEmployes);  
+            
+            newAccount.Code_NIC__c = codeNic;
+            newAccount.Categorie_Entreprise__c = categorieEntreprise;
 
             insert newAccount;
 
@@ -34,19 +38,19 @@ public class AccManager {
         }
     }
 
-    @AuraEnabled
-    public static Account updateAccount(String siret, String nom, String adresse, String codeNic, Date dateCreation) {
-        Account accToUpdate = [SELECT Id, SIRET__c, Name, Adresse__c, Code_NIC__c, Date_Creation__c 
+     @AuraEnabled
+    public static Account updateAccount(String siret, String nom, String categorieEntreprise, String codeNic, String nombreEmployes) {
+        Account accToUpdate = [SELECT Id, SIRET__c, Name, Categorie_Entreprise__c, Code_NIC__c, NumberOfEmployees 
                                FROM Account WHERE SIRET__c = :siret LIMIT 1];
         if (accToUpdate != null) {
             accToUpdate.Name = nom;
-            accToUpdate.Adresse__c = adresse;
+            accToUpdate.NumberOfEmployees = Integer.valueOf(nombreEmployes);  // Correct conversion
             accToUpdate.Code_NIC__c = codeNic;
-            accToUpdate.Date_Creation__c = dateCreation;
+            accToUpdate.Categorie_Entreprise__c = categorieEntreprise;
             update accToUpdate;
             return accToUpdate;
         } else {
             throw new AuraHandledException('Établissement non trouvé pour ce SIRET.');
         }
-    }
+    } 
 }

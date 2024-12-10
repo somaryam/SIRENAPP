@@ -1,5 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import getData from '@salesforce/apex/siren.getData';
+import getData from '@salesforce/apex/ensigneApex.getData';
 import { getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import SIRET_FIELD from "@salesforce/schema/Account.SIRET__c";

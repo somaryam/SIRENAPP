@@ -12,35 +12,24 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
     @track isModalOpen = false;   
     @track modalData = {};     
     @track isSiretValid = false;   
-//staticite modifiables valeurs champs popup like nom et affichage de tous 
-//historique affichage 
-// si j ai le temps afficher depuis le bouton 
-//terminer le plus tot possible 
+
     columns = [
-       { 
-        label: 'Nom', 
-        fieldName: 'nom', 
-        type: 'button', 
-        typeAttributes: {
-            label: { fieldName: 'nom' },
-            name: 'openModal',
-            variant: 'base',
-            disabled: false
-        }
-    },
+        { 
+            label: 'Nom', 
+            fieldName: 'nom', 
+            type: 'button', 
+            typeAttributes: {
+                label: { fieldName: 'nom' },
+                name: 'openModal',  // Utilisé pour le nom
+                variant: 'base',
+                disabled: false
+            }
+        },
         { label: 'SIRET', fieldName: 'siret', type: 'text' },
         { label: 'SIREN', fieldName: 'siren', type: 'text' },
         { label: 'Code NIC', fieldName: 'codeNic', type: 'text' },
-        { label: 'Categorie Entreprise', fieldName: 'dateCreation', type: 'date' },
-        { label: 'Nombre Employes', fieldName: 'numberOfEmployees', type: 'date' },
-        {
-            type: 'action',
-            typeAttributes: {
-                rowActions: [
-                    { label: 'Détail', name: 'detail' }
-                ]
-            }
-        }
+        { label: 'Date Creation', fieldName: 'dateCreation', type: 'date' },
+        { label: 'Adresse', fieldName: 'adresse', type: 'text' }
     ];
 
     handleSiretChange(event) {
@@ -58,9 +47,11 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
                     nom: etab.uniteLegale.denominationUniteLegale,
                     siren: etab.siren,
                     siret: etab.siret,
-                    nombreEmployes: `${etab.siren || ''} ${etab.adresseEtablissement.typeVoieEtablissement || ''} ${etab.adresseEtablissement.libelleVoieEtablissement || ''}, ${etab.adresseEtablissement.codePostalEtablissement || ''} ${etab.adresseEtablissement.libelleCommuneEtablissement || ''}`,
+                    adresse: `${etab.siren || ''} ${etab.adresseEtablissement.typeVoieEtablissement || ''} ${etab.adresseEtablissement.libelleVoieEtablissement || ''}, ${etab.adresseEtablissement.codePostalEtablissement || ''} ${etab.adresseEtablissement.libelleCommuneEtablissement || ''}`,
                     codeNic: etab.nic,
-                    dateCreation: etab.dateCreationEtablissement
+                    dateCreation: etab.dateCreationEtablissement,
+                    nombreEmployes: etab.uniteLegale.trancheEffectifsUniteLegale, 
+                    categorieEntreprise: etab.uniteLegale.categorieEntreprise 
                 }));
             } else {
                 this.error = 'Aucune donnée pour ce SIRET.';
@@ -71,37 +62,36 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
     }
 
     async handleRowAction(event) {
-        
-        console.log('action: ', event);
-        
         const actionName = event.detail.action.name;
-
         const row = event.detail.row;
 
-        if (actionName === 'detail') { 
+        if (actionName === 'openModal') {  // Gère uniquement le clic sur le nom
             const response = await checkIfRecordExists({ siret: row.siret });
             if (response.exists) {
+                // Données récupérées depuis la base de données pour modification
                 this.modalData = {
                     nom: response.record.Name,
-                    siret: response.record.SIREN__c,   
+                    siret: response.record.SIREN__c,
+                    siren: response.record.SIREN__c,   
                     codeNic: response.record.Code_NIC__c,
                     nombreEmployes: response.record.Nombre_Employes__c,
                     categorieEntreprise: response.record.Categorie_Entreprise__c
                 };
                 this.isSiretValid = false;  
             } else {
+                // Données récupérées depuis la recherche pour création
                 this.modalData = {
                     nom: row.nom,
                     siret: row.siret,
                     siren: row.siret.slice(0, 9),   
                     codeNic: row.codeNic,
-                    nombreEmployes: '',   
-                    categorieEntreprise: ''   
+                    nombreEmployes: row.nombreEmployes || '',  // Initialisation avec les données de l'API
+                    categorieEntreprise: row.categorieEntreprise || ''  // Initialisation avec les données de l'API
                 };
                 this.isSiretValid = true;   
             }
 
-            this.isModalOpen = true;   
+            this.isModalOpen = true;   // Ouvrir le modal
         }
     }
 
@@ -117,22 +107,19 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
 
     async handleCreate() {
         try {
-            
             const createdAccount = await createAccount({
                 nom: this.modalData.nom,
                 siren: this.modalData.siren,
                 siret: this.modalData.siret,
                 codeNic: this.modalData.codeNic,
-                nombreEmployes: this.modalData.nombreEmployes,
-                categorieEntreprise: this.modalData.categorieEntreprise
+                nombreEmployes: this.modalData.nombreEmployes,  // Envoi du nombre d'employés
+                categorieEntreprise: this.modalData.categorieEntreprise  // Envoi de la catégorie d'entreprise
             });
 
-            
             this.isModalOpen = false;
             this.modalData = {};
 
-            
-            this[NavigationMixin.Navigate]({
+            this[NavigationMixin.Navigate]( {
                 type: 'standard__recordPage',
                 attributes: {
                     recordId: createdAccount.Id,  
@@ -147,22 +134,19 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
 
     async handleUpdate() {
         try {
-             
             const updatedAccount = await updateAccount({
                 nom: this.modalData.nom,
                 siren: this.modalData.siren,  
                 siret: this.modalData.siret,  
                 codeNic: this.modalData.codeNic,
-                nombreEmployes: this.modalData.nombreEmployes,
-                categorieEntreprise: this.modalData.categorieEntreprise
+                nombreEmployes: this.modalData.nombreEmployes,  // Mise à jour du nombre d'employés
+                categorieEntreprise: this.modalData.categorieEntreprise  // Mise à jour de la catégorie d'entreprise
             });
 
-            
             this.isModalOpen = false;
             this.modalData = {};
 
-     
-            this[NavigationMixin.Navigate]({
+            this[NavigationMixin.Navigate]( {
                 type: 'standard__recordPage',
                 attributes: {
                     recordId: updatedAccount.Id,   
