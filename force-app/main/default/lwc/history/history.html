@@ -1,10 +1,10 @@
 <template>
-    <lightning-card title="Données du Compte" icon-name="standard:account">
+    <lightning-card title="Informations du Compte" icon-name="standard:account">
         <template if:true={siret}>
-            <p><strong>SIRET du compte : </strong>{siret}</p>
+            <p><strong>SIRET :</strong> {siret}</p>
         </template>
-        <template if:true={error}>
-            <p><strong>Erreur : </strong>{error}</p>
+        <template if:false={siret}>
+            <p>Le SIRET n'est pas disponible pour ce compte.</p>
         </template>
     </lightning-card>
 </template>

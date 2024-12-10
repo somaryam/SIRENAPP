@@ -42,15 +42,13 @@ public class AccManager {
     public static Account updateAccount(String siret, String nom, String categorieEntreprise, String codeNic, String nombreEmployes) {
         Account accToUpdate = [SELECT Id, SIRET__c, Name, Categorie_Entreprise__c, Code_NIC__c, NumberOfEmployees 
                                FROM Account WHERE SIRET__c = :siret LIMIT 1];
-        if (accToUpdate != null) {
+      
             accToUpdate.Name = nom;
-            accToUpdate.NumberOfEmployees = Integer.valueOf(nombreEmployes);  // Correct conversion
+            accToUpdate.NumberOfEmployees = Integer.valueOf(nombreEmployes);  
             accToUpdate.Code_NIC__c = codeNic;
             accToUpdate.Categorie_Entreprise__c = categorieEntreprise;
             update accToUpdate;
             return accToUpdate;
-        } else {
-            throw new AuraHandledException('Établissement non trouvé pour ce SIRET.');
-        }
+      
     } 
 }

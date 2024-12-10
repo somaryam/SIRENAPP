@@ -122,6 +122,9 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
             this.isModalOpen = false;
             this.modalData = {};  // Réinitialiser les données du modal
     
+            // Rechargez les résultats pour voir le nouvel enregistrement dans la liste
+            await this.handleSearch();  // Recharge les résultats
+    
             // Rediriger vers la page de l'enregistrement créé
             this[NavigationMixin.Navigate]({
                 type: 'standard__recordPage',
