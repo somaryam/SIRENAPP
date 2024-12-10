@@ -1,14 +1,6 @@
 <template>
     <lightning-card title="Informations SIRET">
         <div class="slds-p-around_medium">
-            <!-- Sélectionner un Account -->
-            <lightning-combobox
-                label="Sélectionner un Account"
-                value={selectedAccountId}
-                options={accounts}
-                onchange={handleAccountChange}
-            ></lightning-combobox>
-
             <!-- Affichage du SIRET -->
             <template if:true={siret}>
                 <p>SIRET sélectionné : {siret}</p>

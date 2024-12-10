@@ -1,32 +1,42 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
+import getSiretData from '@salesforce/apex/SiretDataController.getSiretData'; // Remplacer par un appel Apex si nécessaire
 
 export default class SiretDataDisplay extends LightningElement {
-    @track accounts = [
-        { label: 'Account 1', value: '0013j00000A1BcD', siret: 'SIRET123' },
-        { label: 'Account 2', value: '0013j00000A1BcE', siret: 'SIRET456' },
-        { label: 'Account 3', value: '0013j00000A1BcF', siret: 'SIRET789' }
-    ];  // Exemple d'Accounts simulés
-
-    @track selectedAccountId = '';  // ID de l'account sélectionné
     @track siret = '';  // SIRET de l'account sélectionné
     @track data = [];  // Données associées au SIRET
     @track noData = false;  // Indicateur pour afficher un message si pas de données
 
-    // Gérer le changement d'account sélectionné
-    handleAccountChange(event) {
-        this.selectedAccountId = event.detail.value;
+    // Cette propriété sera définie via l'ID de l'Account sélectionné
+    @api recordId; 
 
-        // Récupérer le SIRET de l'account sélectionné à partir de l'ID de l'account
-        const selectedAccount = this.accounts.find(account => account.value === this.selectedAccountId);
-        this.siret = selectedAccount ? selectedAccount.siret : '';
-
-        // Appeler la méthode pour récupérer les données par SIRET
-        this.getDataForSiret(this.siret);
+    connectedCallback() {
+        // Lors de la connexion du composant, récupérer le SIRET de l'account
+        if (this.recordId) {
+            this.getAccountSiretData(this.recordId);
+        }
     }
 
-    // Récupérer les données en fonction du SIRET
+    // Récupérer les données du SIRET de l'account sélectionné
+    getAccountSiretData(accountId) {
+        // Simuler l'appel API ou Apex pour récupérer le SIRET de l'account
+        getSiretData({ accountId })
+            .then((result) => {
+                if (result && result.siret) {
+                    this.siret = result.siret;
+                    this.getDataForSiret(result.siret); // Appeler la méthode pour récupérer les données associées
+                } else {
+                    this.noData = true;
+                }
+            })
+            .catch((error) => {
+                console.error('Erreur récupération SIRET:', error);
+                this.noData = true;
+            });
+    }
+
+    // Récupérer les données associées au SIRET (ex: Enseigne, dates)
     getDataForSiret(siret) {
-        // Simuler une récupération de données (remplacer avec logique réelle)
+        // Simuler une récupération de données en fonction du SIRET
         if (siret === 'SIRET123') {
             this.data = [
                 { enseigne: 'Enseigne A', dateDebut: '2009-12-25', dateFin: 'En cours' },
