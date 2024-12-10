@@ -34,15 +34,15 @@
                 </header>
                 <div class="slds-modal__content slds-p-around_medium">
                     <lightning-input label="Nom" value={modalData.nom} onchange={handleInputChange} data-id="nom"></lightning-input>
-                    <lightning-input label="SIRET" value={modalData.siret} onchange={handleInputChange} data-id="siret"></lightning-input>
-                    <lightning-input label="SIREN" value={modalData.siren} onchange={handleInputChange} data-id="siren"></lightning-input>
-                    <lightning-input label="Code NIC" value={modalData.codeNic} onchange={handleInputChange} data-id="codeNic"></lightning-input>
+                    <lightning-input label="SIRET" value={modalData.siret} onchange={handleInputChange} data-id="siret" readonly></lightning-input>
+                    <lightning-input label="SIREN" value={modalData.siren} onchange={handleInputChange} data-id="siren" readonly></lightning-input>
+                    <lightning-input label="Code NIC" value={modalData.codeNic} onchange={handleInputChange} data-id="codeNic" readonly></lightning-input>
                     <lightning-input label="Nombre d'employés" value={modalData.nombreEmployes} onchange={handleInputChange} data-id="nombreEmployes"></lightning-input>
                     <lightning-input label="Catégorie d'entreprise" value={modalData.categorieEntreprise} onchange={handleInputChange} data-id="categorieEntreprise"></lightning-input>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning-button variant="neutral" label="Annuler" onclick={closeModal}></lightning-button>
-                    <lightning-button variant="brand" label="Enregistrer" onclick={handlecreate}></lightning-button>
+                    <lightning-button variant="brand" label="Enregistrer" onclick={handleCreate}></lightning-button>
                 </footer>
             </div>
         </section>

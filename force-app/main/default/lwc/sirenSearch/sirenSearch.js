@@ -112,51 +112,52 @@ export default class SirenSearch extends NavigationMixin(LightningElement) {
                 siren: this.modalData.siren,
                 siret: this.modalData.siret,
                 codeNic: this.modalData.codeNic,
-                nombreEmployes: this.modalData.nombreEmployes,  // Envoi du nombre d'employés
-                categorieEntreprise: this.modalData.categorieEntreprise  // Envoi de la catégorie d'entreprise
+                nombreEmployes: this.modalData.nombreEmployes,
+                categorieEntreprise: this.modalData.categorieEntreprise
             });
-
+    
+            console.log('Account created:', createdAccount);  // Vérifiez la réponse ici
+    
+            // Fermer le modal
             this.isModalOpen = false;
-            this.modalData = {};
-
-            this[NavigationMixin.Navigate]( {
+            this.modalData = {};  // Réinitialiser les données du modal
+    
+            // Rediriger vers la page de l'enregistrement créé
+            this[NavigationMixin.Navigate]({
                 type: 'standard__recordPage',
                 attributes: {
-                    recordId: createdAccount.Id,  
-                    objectApiName: 'Account',   
-                    actionName: 'view'          
+                    recordId: createdAccount.Id,  // L'ID du compte créé
+                    objectApiName: 'Account',     // L'objet que vous voulez visualiser
+                    actionName: 'view'            // L'action de vue
                 }
             });
+    
         } catch (error) {
+            console.error('Error during createAccount:', error);
             this.error = 'Erreur lors de la création de l\'établissement : ' + error.body.message;
         }
     }
-
+    
+    
     async handleUpdate() {
         try {
             const updatedAccount = await updateAccount({
                 nom: this.modalData.nom,
-                siren: this.modalData.siren,  
-                siret: this.modalData.siret,  
+                siren: this.modalData.siren,
+                siret: this.modalData.siret,
                 codeNic: this.modalData.codeNic,
-                nombreEmployes: this.modalData.nombreEmployes,  // Mise à jour du nombre d'employés
-                categorieEntreprise: this.modalData.categorieEntreprise  // Mise à jour de la catégorie d'entreprise
+                nombreEmployes: this.modalData.nombreEmployes,
+                categorieEntreprise: this.modalData.categorieEntreprise
             });
-
+    
+            console.log('Account updated:', updatedAccount);  // Vérifiez la réponse ici
             this.isModalOpen = false;
             this.modalData = {};
-
-            this[NavigationMixin.Navigate]( {
-                type: 'standard__recordPage',
-                attributes: {
-                    recordId: updatedAccount.Id,   
-                    objectApiName: 'Account',    
-                    actionName: 'view'            
-                }
-            });
-
+            // Redirection ou autre logique...
         } catch (error) {
+            console.error('Error during updateAccount:', error);
             this.error = 'Erreur lors de la mise à jour de l\'établissement : ' + error.body.message;
         }
     }
+    
 }
